@@ -737,6 +737,41 @@
     color: var(--accent);
   }
 
+  .btn-github {
+    background: transparent;
+    color: #FFFFFF;
+    border: 1px solid #333333;
+    transition: all 0.3s ease;
+  }
+
+  .btn-github:hover {
+    border-color: #FFFFFF;
+    background: rgba(255, 255, 255, 0.05);
+    color: #FFFFFF;
+  }
+
+  .btn-linkedin {
+    background: transparent;
+    color: #0077B5;
+    border: 1px solid #0077B5;
+    transition: all 0.3s ease;
+  }
+
+  .btn-linkedin:hover {
+    background: rgba(0, 119, 181, 0.1);
+    border-color: #0099FF;
+    color: #0099FF;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 1s;
+    margin-top: 48px;
+  }
+
   /* Divider */
   .divider {
     height: 1px;
@@ -895,6 +930,12 @@
       <div class="stat-num"><span>0</span></div>
       <div class="stat-label">Manual Steps</div>
     </div>
+  </div>
+
+  <div class="hero-buttons">
+    <a href="https://www.upwork.com/freelancers/~014200b37321558512?mp_source=share" class="btn-primary">Hire Me on Upwork →</a>
+    <a href="https://github.com/vivekanandtech" class="btn-secondary btn-github">View GitHub →</a>
+    <a href="https://www.linkedin.com/in/vivek120891/" class="btn-secondary btn-linkedin">View LinkedIn →</a>
   </div>
 </section>
 
@@ -1227,8 +1268,6 @@
     </p>
     <div class="cta-buttons">
       <a href="https://www.upwork.com/freelancers/~014200b37321558512?mp_source=share" class="btn-primary">Hire Me on Upwork →</a>
-      <a href="https://github.com/vivekanandtech" class="btn-secondary">View GitHub →</a>
-      <a href="https://www.linkedin.com/in/vivek120891/" class="btn-secondary">View LinkedIn →</a>
     </div>
   </div>
 </section>
