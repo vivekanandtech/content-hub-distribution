@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Content Hub & Distribution — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080A0F;
+    --surface: #0E1117;
+    --surface2: #141820;
+    --border: #1E2535;
+    --accent: #00E5FF;
+    --accent2: #7B61FF;
+    --accent3: #FF6B6B;
+    --accent4: #00FF9D;
+    --text: #E8EAF0;
+    --text-dim: #6B7280;
+    --text-mid: #9CA3AF;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: difference;
+  }
+
+  .cursor-ring {
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(0, 229, 255, 0.4);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.15s ease;
+  }
+
+  /* Grid Background */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Noise Texture */
+  .noise {
+    position: fixed;
+    inset: 0;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Hero */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 60px;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px;
+    right: -200px;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(0, 229, 255, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -100px;
+    left: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(123, 97, 255, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .hero-tag::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(52px, 8vw, 110px);
+    font-weight: 800;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+
+  .hero-title .line1 { display: block; color: var(--text); }
+  .hero-title .line2 { display: block; color: transparent; -webkit-text-stroke: 1px rgba(232, 234, 240, 0.3); }
+  .hero-title .line3 { 
+    display: block; 
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    max-width: 560px;
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-mid);
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 48px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.8s;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .stat-num span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  /* Floating badge */
+  .hero-badge {
+    position: absolute;
+    top: 80px;
+    right: 60px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 20px;
+    font-size: 12px;
+    color: var(--accent4);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeDown 0.8s ease forwards 1s;
+  }
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--accent4);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* Flow Diagram Section */
+  .section {
+    padding: 120px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 80px;
+    flex-wrap: wrap;
+    gap: 32px;
+  }
+
+  .section-tag {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--text-mid);
+    line-height: 1.7;
+    max-width: 340px;
+    margin-top: 16px;
+  }
+
+  /* Architecture Flow */
+  .flow-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .flow-container::before {
+    content: 'AUTOMATION FLOW';
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+  }
+
+  .flow-main {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 60px;
+    overflow-x: auto;
+    padding-bottom: 20px;
+  }
+
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .node-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    position: relative;
+    transition: transform 0.3s ease;
+  }
+
+  .node-icon:hover { transform: translateY(-4px); }
+
+  .node-icon::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 17px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+
+  .node-rss { background: linear-gradient(135deg, #FF6B35, #F7C59F20); }
+  .node-vars { background: linear-gradient(135deg, #7B61FF, #A78BFA20); }
+  .node-bitly { background: linear-gradient(135deg, #EE4266, #FF6B6B20); }
+  .node-ai { background: linear-gradient(135deg, #00E5FF, #0EA5E920); }
+  .node-json { background: linear-gradient(135deg, #00FF9D, #10B98120); }
+  .node-router { background: linear-gradient(135deg, #F59E0B, #FCD34D20); }
+
+  .node-label {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-align: center;
+    max-width: 70px;
+  }
+
+  .flow-arrow {
+    width: 40px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--border), rgba(0, 229, 255, 0.3));
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .flow-arrow::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -4px;
+    width: 8px;
+    height: 8px;
+    border-top: 2px solid rgba(0, 229, 255, 0.3);
+    border-right: 2px solid rgba(0, 229, 255, 0.3);
+    transform: rotate(45deg);
+  }
+
+  /* Routes */
+  .routes-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+
+  .route-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s ease, transform 0.3s ease;
+    cursor: default;
+  }
+
+  .route-card:hover {
+    transform: translateY(-4px);
+  }
+
+  .route-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+  }
+
+  .route-telegram::before { background: linear-gradient(90deg, #2AABEE, transparent); border-color: #2AABEE40; }
+  .route-discord::before { background: linear-gradient(90deg, #5865F2, transparent); border-color: #5865F240; }
+  .route-linkedin::before { background: linear-gradient(90deg, #0077B5, transparent); }
+  .route-twitter::before { background: linear-gradient(90deg, #1DA1F2, transparent); }
+  .route-slack::before { background: linear-gradient(90deg, #E01E5A, transparent); }
+
+  .route-card:hover.route-telegram { border-color: #2AABEE40; }
+  .route-card:hover.route-discord { border-color: #5865F240; }
+  .route-card:hover.route-linkedin { border-color: #0077B540; }
+  .route-card:hover.route-twitter { border-color: #1DA1F240; }
+  .route-card:hover.route-slack { border-color: #E01E5A40; }
+
+  .route-platform {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .route-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .route-filter {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+    padding: 4px 8px;
+    background: var(--bg);
+    border-radius: 4px;
+    display: inline-block;
+  }
+
+  .route-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .route-step {
+    font-size: 11px;
+    color: var(--text-mid);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .route-step::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    flex-shrink: 0;
+  }
+
+  /* Tech Stack Section */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .tech-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tech-card::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    opacity: 0.05;
+  }
+
+  .tech-card:hover { 
+    transform: translateY(-4px);
+    border-color: rgba(0, 229, 255, 0.2);
+  }
+
+  .tech-icon {
+    font-size: 32px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .tech-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+
+  .tech-desc {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.7;
+  }
+
+  .tech-tag {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .tag-blue { background: rgba(0, 229, 255, 0.1); color: var(--accent); }
+  .tag-purple { background: rgba(123, 97, 255, 0.1); color: var(--accent2); }
+  .tag-green { background: rgba(0, 255, 157, 0.1); color: var(--accent4); }
+  .tag-red { background: rgba(255, 107, 107, 0.1); color: var(--accent3); }
+
+  /* Results Section */
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .result-card.featured {
+    grid-column: span 2;
+    background: linear-gradient(135deg, var(--surface), #0D1520);
+    border-color: rgba(0, 229, 255, 0.2);
+  }
+
+  .result-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 72px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .result-number.cyan { color: var(--accent); }
+  .result-number.purple { color: var(--accent2); }
+  .result-number.green { color: var(--accent4); }
+  .result-number.red { color: var(--accent3); }
+
+  .result-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .result-desc {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.7;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 40px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--accent), var(--accent2), transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: 48px;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -44px;
+    top: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+    box-shadow: 0 0 12px var(--accent);
+  }
+
+  .timeline-phase {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .timeline-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .timeline-desc {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.7;
+  }
+
+  /* Code Block */
+  .code-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.8;
+    margin-top: 16px;
+    overflow-x: auto;
+  }
+
+  .code-block .key { color: var(--accent2); }
+  .code-block .val { color: var(--accent4); }
+  .code-block .str { color: var(--accent); }
+  .code-block .com { color: var(--text-dim); font-style: italic; }
+
+  /* CTA Section */
+  .cta-section {
+    padding: 120px 60px;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+
+  .cta-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cta-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(40px, 6vw, 80px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    margin-bottom: 24px;
+  }
+
+  .cta-subtitle {
+    font-size: 15px;
+    color: var(--text-mid);
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    padding: 16px 40px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 229, 255, 0.3);
+  }
+
+  .btn-secondary {
+    padding: 16px 40px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-secondary:hover {
+    border-color: rgba(0, 229, 255, 0.4);
+    color: var(--accent);
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 60px;
+  }
+
+  /* Scrolling ticker */
+  .ticker {
+    padding: 24px 0;
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+    margin-bottom: 0;
+  }
+
+  .ticker-inner {
+    display: flex;
+    gap: 48px;
+    white-space: nowrap;
+    animation: ticker 20s linear infinite;
+  }
+
+  .ticker-item {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+
+  .ticker-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .hero { padding: 100px 24px 60px; }
+    .section { padding: 80px 24px; }
+    .divider { margin: 0 24px; }
+    .hero-badge { display: none; }
+    .routes-grid { grid-template-columns: repeat(2, 1fr); }
+    .results-grid { grid-template-columns: 1fr; }
+    .result-card.featured { grid-column: span 1; }
+    .flow-container { padding: 32px 24px; }
+    .cta-section { padding: 80px 24px; }
+  }
+
+  /* Upwork badge */
+  .upwork-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(20, 184, 96, 0.1);
+    border: 1px solid rgba(20, 184, 96, 0.3);
+    border-radius: 100px;
+    padding: 8px 20px;
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: #14B860;
+    letter-spacing: 0.05em;
+  }
+
+  .upwork-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #14B860;
+  }
+
+  /* Separator */
+  .sep {
+    color: var(--text-dim);
+    margin: 0 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Background -->
+<div class="grid-bg"></div>
+<div class="noise"></div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">
+    <div class="badge-dot"></div>
+    Automation Project — 2026
+  </div>
+
+  <div class="hero-tag">Make.com Automation · AI Integration · Multi-Platform</div>
+
+  <h1 class="hero-title">
+    <span class="line1">AI Content</span>
+    <span class="line2">Hub &</span>
+    <span class="line3">Distribution</span>
+  </h1>
+
+  <p class="hero-desc">
+    A fully automated content pipeline that ingests RSS feeds, uses Mistral AI to analyze and rewrite content for 5 different platform audiences, then distributes simultaneously to Telegram, Discord, LinkedIn, Twitter, and Slack — all without any manual intervention.
+  </p>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num"><span>5</span></div>
+      <div class="stat-label">Platforms</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num"><span>6</span></div>
+      <div class="stat-label">AI Calls</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num"><span>22+</span></div>
+      <div class="stat-label">Modules</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num"><span>0</span></div>
+      <div class="stat-label">Manual Steps</div>
+    </div>
+  </div>
+</section>
+
+<!-- Ticker -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <div class="ticker-item"><div class="ticker-dot"></div>Make.com</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Mistral AI</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Telegram Bot API</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Discord Webhooks</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>LinkedIn API</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Twitter/X API</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Slack API</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Bitly URL Shortener</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Google Sheets</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>RSS Feed Processing</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Zapier Integration</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>JSON Parsing</div>
+    <!-- Duplicate for infinite scroll -->
+    <div class="ticker-item"><div class="ticker-dot"></div>Make.com</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Mistral AI</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Telegram Bot API</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Discord Webhooks</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>LinkedIn API</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Twitter/X API</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Slack API</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Bitly URL Shortener</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Google Sheets</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>RSS Feed Processing</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>Zapier Integration</div>
+    <div class="ticker-item"><div class="ticker-dot"></div>JSON Parsing</div>
+  </div>
+</div>
+
+<!-- Architecture Section -->
+<section class="section">
+  <div class="section-header fade-in">
+    <div>
+      <div class="section-tag">System Design</div>
+      <h2 class="section-title">Automation<br>Architecture</h2>
+    </div>
+    <p class="section-subtitle">
+      A sequential pipeline with intelligent branching. Each article is processed once, then simultaneously distributed to 5 platforms with unique AI-rewritten content for each audience.
+    </p>
+  </div>
+
+  <div class="flow-container fade-in">
+    <div class="flow-main">
+      <div class="flow-node">
+        <div class="node-icon node-rss">📡</div>
+        <div class="node-label">RSS Feed</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="node-icon node-vars">⚙️</div>
+        <div class="node-label">Set Variables</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="node-icon node-bitly">🔗</div>
+        <div class="node-label">Bitly URL</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="node-icon node-ai">🤖</div>
+        <div class="node-label">Mistral AI</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="node-icon node-json">{ }</div>
+        <div class="node-label">JSON Parse</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="node-icon node-vars">📦</div>
+        <div class="node-label">Store AI Data</div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-node">
+        <div class="node-icon node-router">🔀</div>
+        <div class="node-label">Router</div>
+      </div>
+    </div>
+
+    <div class="routes-grid">
+      <div class="route-card route-telegram">
+        <div class="route-platform">✈️</div>
+        <div class="route-name">Telegram</div>
+        <div class="route-filter">All Content</div>
+        <div class="route-steps">
+          <div class="route-step">AI rewrite for tech audience</div>
+          <div class="route-step">Format with topics & hashtags</div>
+          <div class="route-step">Send via Bot API</div>
+          <div class="route-step">Log status</div>
+        </div>
+      </div>
+
+      <div class="route-card route-discord">
+        <div class="route-platform">🎮</div>
+        <div class="route-name">Discord</div>
+        <div class="route-filter">All Content</div>
+        <div class="route-steps">
+          <div class="route-step">AI rewrite casual tone</div>
+          <div class="route-step">Add emojis & discussion hook</div>
+          <div class="route-step">Post via Webhook</div>
+          <div class="route-step">Log status</div>
+        </div>
+      </div>
+
+      <div class="route-card route-linkedin">
+        <div class="route-platform">💼</div>
+        <div class="route-name">LinkedIn</div>
+        <div class="route-filter">Business/Marketing only</div>
+        <div class="route-steps">
+          <div class="route-step">AI rewrite professional tone</div>
+          <div class="route-step">Add business insights</div>
+          <div class="route-step">Post via Zapier webhook</div>
+          <div class="route-step">Log status</div>
+        </div>
+      </div>
+
+      <div class="route-card route-twitter">
+        <div class="route-platform">🐦</div>
+        <div class="route-name">Twitter / X</div>
+        <div class="route-filter">Positive/Tech only</div>
+        <div class="route-steps">
+          <div class="route-step">AI creates 4-tweet thread</div>
+          <div class="route-step">Split & sequence tweets</div>
+          <div class="route-step">Post thread via Zapier</div>
+          <div class="route-step">Log status</div>
+        </div>
+      </div>
+
+      <div class="route-card route-slack">
+        <div class="route-platform">💬</div>
+        <div class="route-name">Slack</div>
+        <div class="route-filter">Tech/Business only</div>
+        <div class="route-steps">
+          <div class="route-step">AI extracts action items</div>
+          <div class="route-step">Format team briefing</div>
+          <div class="route-step">Post to #content-review</div>
+          <div class="route-step">Log status</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Tech Stack -->
+<section class="section">
+  <div class="section-header fade-in">
+    <div>
+      <div class="section-tag">Technology</div>
+      <h2 class="section-title">Tech Stack</h2>
+    </div>
+    <p class="section-subtitle">
+      Built with production-grade tools and APIs. Every component chosen for reliability, scalability, and cost efficiency.
+    </p>
+  </div>
+
+  <div class="tech-grid fade-in">
+    <div class="tech-card">
+      <span class="tech-icon">⚡</span>
+      <div class="tech-name">Make.com</div>
+      <div class="tech-desc">Core automation platform orchestrating the entire pipeline. 22+ modules with conditional routing, error handling, and scheduled execution.</div>
+      <span class="tech-tag tag-blue">Automation Platform</span>
+    </div>
+
+    <div class="tech-card">
+      <span class="tech-icon">🧠</span>
+      <div class="tech-name">Mistral AI</div>
+      <div class="tech-desc">Powers 6 AI calls per article: master content analysis (category, sentiment, hashtags) plus 5 platform-specific content rewrites.</div>
+      <div class="code-block">
+        <span class="com">// Master Analysis Prompt</span><br>
+        <span class="key">model</span>: <span class="str">"mistral-small-latest"</span><br>
+        <span class="key">outputs</span>: [<span class="val">summary</span>, <span class="val">category</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="val">sentiment</span>, <span class="val">topics</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="val">hashtags</span>]
+      </div>
+      <span class="tech-tag tag-purple">AI Engine</span>
+    </div>
+
+    <div class="tech-card">
+      <span class="tech-icon">🔗</span>
+      <div class="tech-name">Bitly API</div>
+      <div class="tech-desc">Automatically shortens every article URL before distribution. Tracks click analytics across all platforms from a single dashboard.</div>
+      <span class="tech-tag tag-red">URL Management</span>
+    </div>
+
+    <div class="tech-card">
+      <span class="tech-icon">🔀</span>
+      <div class="tech-name">Router Logic</div>
+      <div class="tech-desc">Intelligent content routing with conditional filters. LinkedIn gets Business/Marketing only. Twitter gets Positive/Tech. Slack gets Tech/Business.</div>
+      <div class="code-block">
+        <span class="com">// Filter Example</span><br>
+        Route 3 (LinkedIn):<br>
+        &nbsp;<span class="key">category</span> == <span class="str">"Business"</span><br>
+        &nbsp;OR <span class="key">category</span> == <span class="str">"Marketing"</span>
+      </div>
+      <span class="tech-tag tag-green">Content Logic</span>
+    </div>
+
+    <div class="tech-card">
+      <span class="tech-icon">⚡</span>
+      <div class="tech-name">Zapier Integration</div>
+      <div class="tech-desc">Bridges Make.com with LinkedIn and Twitter APIs using webhook triggers and Python code for URL-encoded data parsing and tweet threading.</div>
+      <span class="tech-tag tag-purple">Bridge Layer</span>
+    </div>
+
+    <div class="tech-card">
+      <span class="tech-icon">📊</span>
+      <div class="tech-name">Google Sheets</div>
+      <div class="tech-desc">Master logging dashboard tracking every article processed, platform distribution status, AI analysis results, and timestamps in real-time.</div>
+      <span class="tech-tag tag-green">Analytics & Logging</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Key Challenges Section -->
+<section class="section">
+  <div class="section-header fade-in">
+    <div>
+      <div class="section-tag">Engineering</div>
+      <h2 class="section-title">Challenges<br>Solved</h2>
+    </div>
+    <p class="section-subtitle">
+      Real problems encountered and solved during the build. Every challenge required creative problem-solving.
+    </p>
+  </div>
+
+  <div class="fade-in">
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-phase">Challenge 01</div>
+        <div class="timeline-title">Router Merge Problem</div>
+        <div class="timeline-desc">Make.com's Router cannot merge multiple routes into a single downstream module. Solved by redesigning the architecture so each route publishes independently to its own platform, eliminating the need to merge.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Challenge 02</div>
+        <div class="timeline-title">JSON Parsing from AI Response</div>
+        <div class="timeline-desc">Mistral AI returns content embedded in a complex nested array structure with newline characters breaking JSON parsing. Solved using Make.com's replace() function with the correct array indexing: choices[1].message.content.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Challenge 03</div>
+        <div class="timeline-title">Special Characters Breaking JSON</div>
+        <div class="timeline-desc">AI-generated content contains quotes, newlines, and special characters that break JSON when sent as HTTP body. Solved by switching from raw JSON body to form URL-encoded format, which handles escaping automatically.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Challenge 04</div>
+        <div class="timeline-title">Zapier Data Parsing</div>
+        <div class="timeline-desc">Zapier receives form-encoded data as a single "Type" field string rather than parsed fields. Solved using Python's urllib.parse.parse_qs() function to decode the URL-encoded string into individual accessible fields.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Challenge 05</div>
+        <div class="timeline-title">Twitter Thread Creation</div>
+        <div class="timeline-desc">Twitter/X native module was removed from Make.com. Solved using a Zapier webhook approach where Mistral AI generates 4 numbered tweets separated by a custom delimiter, which Zapier then splits and posts as a threaded conversation.</div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-phase">Challenge 06</div>
+        <div class="timeline-title">Hugging Face API Deprecation</div>
+        <div class="timeline-desc">The original Hugging Face api-inference endpoint was deprecated mid-build. Pivoted to Mistral AI which provided superior JSON formatting, better instruction following, and a generous free tier of 1M tokens/month.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Results -->
+<section class="section">
+  <div class="section-header fade-in">
+    <div>
+      <div class="section-tag">Impact</div>
+      <h2 class="section-title">Results &<br>Outcomes</h2>
+    </div>
+  </div>
+
+  <div class="results-grid fade-in">
+    <div class="result-card featured">
+      <div class="result-number cyan">100%</div>
+      <div class="result-label">Fully Automated Pipeline</div>
+      <div class="result-desc">From RSS feed ingestion to multi-platform distribution — zero manual intervention required. The system runs on a schedule, processes new articles automatically, and distributes platform-specific AI-written content to all 5 channels simultaneously.</div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-number purple">6x</div>
+      <div class="result-label">AI-Powered Content Variations</div>
+      <div class="result-desc">Each article generates 6 unique AI outputs — one master analysis plus 5 platform-specific rewrites tailored for different audiences and tones.</div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-number green">~$0.01</div>
+      <div class="result-label">Cost Per Article</div>
+      <div class="result-desc">Extremely cost-efficient at approximately 1 cent per article processed across all 5 platforms using Mistral AI's free tier and Make.com's operation model.</div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-number cyan">5</div>
+      <div class="result-label">Simultaneous Platform Posts</div>
+      <div class="result-desc">Telegram, Discord, LinkedIn, Twitter thread, and Slack team briefing — all from a single RSS article, each with unique AI-generated content.</div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-number red">∞</div>
+      <div class="result-label">Scalable RSS Feeds</div>
+      <div class="result-desc">Multiple RSS feeds can be added by cloning the source module. The system handles deduplication automatically, never processing the same article twice.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner fade-in">
+    <div class="upwork-badge">
+      <div class="upwork-dot"></div>
+      Available for Similar Projects on Upwork
+    </div>
+    <h2 class="cta-title">Let's Build Your Automation</h2>
+    <p class="cta-subtitle">
+      I specialise in building end-to-end automation pipelines using Make.com, AI APIs, and multi-platform integrations. From simple workflows to complex content distribution systems like this one.
+    </p>
+    <div class="cta-buttons">
+      <a href="#" class="btn-primary">Hire Me on Upwork →</a>
+      <a href="#" class="btn-secondary">View GitHub →</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+
+  document.addEventListener('mousemove', (e) => {
+    cursor.style.left = e.clientX - 6 + 'px';
+    cursor.style.top = e.clientY - 6 + 'px';
+    cursorRing.style.left = e.clientX - 20 + 'px';
+    cursorRing.style.top = e.clientY - 20 + 'px';
+  });
+
+  document.addEventListener('mousedown', () => {
+    cursor.style.transform = 'scale(2)';
+    cursorRing.style.transform = 'scale(0.8)';
+  });
+
+  document.addEventListener('mouseup', () => {
+    cursor.style.transform = 'scale(1)';
+    cursorRing.style.transform = 'scale(1)';
+  });
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, i * 100);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
